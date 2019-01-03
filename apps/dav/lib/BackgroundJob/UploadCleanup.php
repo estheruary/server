@@ -71,9 +71,12 @@ class UploadCleanup extends TimedJob {
 		//Remove if all files have an mtime of more than a day
 		$time = $this->time->getTime() - 60*60*24;
 
+		// The folder has to be more than a day old
+		$initial = $uploadFolder->getMTime() < $time;
+
 		$expire = array_reduce($files, function(bool $carry, File $file) use ($time) {
 			return $carry && $file->getMTime() < $time;
-		}, true);
+		}, $initial);
 
 		if ($expire) {
 			$uploadFolder->delete();
