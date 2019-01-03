@@ -105,12 +105,25 @@ class AddressBook extends \Sabre\CardDAV\AddressBook implements IShareable {
 				'privilege' => '{DAV:}read',
 				'principal' => $this->getOwner(),
 				'protected' => true,
-			]];
-		$acl[] = [
+			],[
 				'privilege' => '{DAV:}write',
 				'principal' => $this->getOwner(),
 				'protected' => true,
+			]
+		];
+
+		if ($this->getOwner() === 'principals/system/system') {
+			$acl[] = [
+				'privilege' => '{DAV:}read',
+				'principal' => '{DAV:}authenticated',
+				'protected' => true,
 			];
+		}
+
+		if (!$this->isShared()) {
+			return $acl;
+		}
+
 		if ($this->getOwner() !== parent::getOwner()) {
 			$acl[] =  [
 					'privilege' => '{DAV:}read',
@@ -125,19 +138,12 @@ class AddressBook extends \Sabre\CardDAV\AddressBook implements IShareable {
 				];
 			}
 		}
-		if ($this->getOwner() === 'principals/system/system') {
-			$acl[] = [
-					'privilege' => '{DAV:}read',
-					'principal' => '{DAV:}authenticated',
-					'protected' => true,
-			];
-		}
 
-		if ($this->isShared()) {
-			return $acl;
-		}
-
-		return $this->carddavBackend->applyShareAcl($this->getResourceId(), $acl);
+		$acl = $this->carddavBackend->applyShareAcl($this->getResourceId(), $acl);
+		$allowedPrincipals = [$this->getOwner(), parent::getOwner(), 'principals/system/system'];
+		return array_filter($acl, function($rule) use ($allowedPrincipals) {
+			return \in_array($rule['principal'], $allowedPrincipals, true);
+		});
 	}
 
 	public function getChildACL() {

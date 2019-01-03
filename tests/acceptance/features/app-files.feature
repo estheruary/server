@@ -1,5 +1,42 @@
 Feature: app-files
 
+  Scenario: open and close the details view
+    Given I am logged in
+    When I open the details view for "welcome.txt"
+    And I see that the details view is open
+    And I close the details view
+    Then I see that the details view is closed
+
+  Scenario: open and close the details view twice
+    Given I am logged in
+    And I open the details view for "welcome.txt"
+    And I see that the details view is open
+    And I close the details view
+    And I see that the details view is closed
+    When I open the details view for "welcome.txt"
+    And I see that the details view is open
+    And I close the details view
+    Then I see that the details view is closed
+
+  Scenario: open and close the details view again after coming back from a different section
+    Given I am logged in
+    And I open the details view for "welcome.txt"
+    And I see that the details view is open
+    And I close the details view
+    And I see that the details view is closed
+    And I open the "Recent" section
+    And I see that the current section is "Recent"
+    And I open the details view for "welcome.txt"
+    And I see that the details view is open
+    And I close the details view
+    And I see that the details view is closed
+    When I open the "All files" section
+    And I see that the current section is "All files"
+    And I open the details view for "welcome.txt"
+    And I see that the details view is open
+    And I close the details view
+    Then I see that the details view is closed
+
   Scenario: viewing a favorite file in its folder shows the correct sidebar view
     Given I am logged in
     And I create a new folder named "other"
@@ -110,154 +147,6 @@ Feature: app-files
     Then I see that the file list contains a file named "farewell.txt"
     And I see that the file name shown in the details view is "farewell.txt"
 
-  Scenario: open the menu in a public shared link
-    Given I act as John
-    And I am logged in
-    And I share the link for "welcome.txt"
-    And I write down the shared link
-    When I act as Jane
-    And I visit the shared link I wrote down
-    And I see that the current page is the shared link I wrote down
-    And I open the Share menu
-    Then I see that the Share menu is shown
-
-  Scenario: hide download in a public shared link
-    Given I act as John
-    And I am logged in
-    And I share the link for "welcome.txt"
-    And I set the download of the shared link as hidden
-    And I write down the shared link
-    When I act as Jane
-    And I visit the shared link I wrote down
-    And I see that the current page is the shared link I wrote down
-    Then I see that the download button is not shown
-    And I see that the Share menu button is not shown
-
-  Scenario: show download again in a public shared link
-    Given I act as John
-    And I am logged in
-    And I share the link for "welcome.txt"
-    And I set the download of the shared link as hidden
-    And I set the download of the shared link as shown
-    And I write down the shared link
-    When I act as Jane
-    And I visit the shared link I wrote down
-    And I see that the current page is the shared link I wrote down
-    Then I see that the download button is shown
-    And I open the Share menu
-    And I see that the Share menu is shown
-
-  Scenario: creation is not possible by default in a public shared folder
-    Given I act as John
-    And I am logged in
-    And I create a new folder named "Shared folder"
-    # To share the link the "Share" inline action has to be clicked but, as the
-    # details view is opened automatically when the folder is created, clicking
-    # on the inline action could fail if it is covered by the details view due
-    # to its opening animation. Instead of ensuring that the animations of the
-    # contents and the details view have both finished it is easier to close the
-    # details view and wait until it is closed before continuing.
-    And I close the details view
-    And I see that the details view is closed
-    And I share the link for "Shared folder"
-    And I write down the shared link
-    When I act as Jane
-    And I visit the shared link I wrote down
-    And I see that the current page is the shared link I wrote down
-    And I see that the file list is eventually loaded
-    Then I see that it is not possible to create new files
-
-  Scenario: create folder in a public editable shared folder
-    Given I act as John
-    And I am logged in
-    And I create a new folder named "Editable shared folder"
-    # To share the link the "Share" inline action has to be clicked but, as the
-    # details view is opened automatically when the folder is created, clicking
-    # on the inline action could fail if it is covered by the details view due
-    # to its opening animation. Instead of ensuring that the animations of the
-    # contents and the details view have both finished it is easier to close the
-    # details view and wait until it is closed before continuing.
-    And I close the details view
-    And I see that the details view is closed
-    And I share the link for "Editable shared folder"
-    And I set the shared link as editable
-    And I write down the shared link
-    When I act as Jane
-    And I visit the shared link I wrote down
-    And I see that the current page is the shared link I wrote down
-    And I create a new folder named "Subfolder"
-    Then I see that the file list contains a file named "Subfolder"
-
-  Scenario: owner sees folder created in the public page of an editable shared folder
-    Given I act as John
-    And I am logged in
-    And I create a new folder named "Editable shared folder"
-    # To share the link the "Share" inline action has to be clicked but, as the
-    # details view is opened automatically when the folder is created, clicking
-    # on the inline action could fail if it is covered by the details view due
-    # to its opening animation. Instead of ensuring that the animations of the
-    # contents and the details view have both finished it is easier to close the
-    # details view and wait until it is closed before continuing.
-    And I close the details view
-    And I see that the details view is closed
-    And I share the link for "Editable shared folder"
-    And I set the shared link as editable
-    And I write down the shared link
-    And I act as Jane
-    And I visit the shared link I wrote down
-    And I see that the current page is the shared link I wrote down
-    And I create a new folder named "Subfolder"
-    And I see that the file list contains a file named "Subfolder"
-    When I act as John
-    And I enter in the folder named "Editable shared folder"
-    Then I see that the file list contains a file named "Subfolder"
-
-  Scenario: set a password to a shared link
-    Given I am logged in
-    And I share the link for "welcome.txt"
-    When I protect the shared link with the password "abcdef"
-    Then I see that the working icon for password protect is shown
-    And I see that the working icon for password protect is eventually not shown
-    And I see that the link share is password protected
-    # As Talk is not enabled in the acceptance tests of the server the checkbox
-    # is never shown.
-    And I see that the checkbox to protect the password of the link share by Talk is not shown
-
-  Scenario: access a shared link protected by password with a valid password
-    Given I act as John
-    And I am logged in
-    And I share the link for "welcome.txt" protected by the password "abcdef"
-    And I write down the shared link
-    When I act as Jane
-    And I visit the shared link I wrote down
-    And I see that the current page is the Authenticate page for the shared link I wrote down
-    And I authenticate with password "abcdef"
-    Then I see that the current page is the shared link I wrote down
-    And I see that the shared file preview shows the text "Welcome to your Nextcloud account!"
-
-  Scenario: access a shared link protected by password with an invalid password
-    Given I act as John
-    And I am logged in
-    And I share the link for "welcome.txt" protected by the password "abcdef"
-    And I write down the shared link
-    When I act as Jane
-    And I visit the shared link I wrote down
-    And I authenticate with password "fedcba"
-    Then I see that the current page is the Authenticate page for the shared link I wrote down
-    And I see that a wrong password for the shared file message is shown
-
-  Scenario: access a direct download shared link protected by password with a valid password
-    Given I act as John
-    And I am logged in
-    And I share the link for "welcome.txt" protected by the password "abcdef"
-    And I write down the shared link
-    When I act as Jane
-    And I visit the direct download shared link I wrote down
-    And I see that the current page is the Authenticate page for the direct download shared link I wrote down
-    And I authenticate with password "abcdef"
-    # download starts no page redirection
-    And I see that the current page is the Authenticate page for the direct download shared link I wrote down
-
   Scenario: marking a file as favorite causes the file list to be sorted again
     Given I am logged in
     And I create a new folder named "A name alphabetically lower than welcome.txt"
@@ -292,3 +181,22 @@ Feature: app-files
     When I unmark "welcome.txt" as favorite
     Then I see that "welcome.txt" is not marked as favorite
     And I see that "A name alphabetically lower than welcome.txt" precedes "welcome.txt" in the file list
+
+  Scenario: mark a file as favorite in the details view
+    Given I am logged in
+    And I open the details view for "welcome.txt"
+    And I see that the details view is open
+    When I mark the file as favorite in the details view
+    Then I see that "welcome.txt" is marked as favorite
+    And I see that the file is marked as favorite in the details view
+
+  Scenario: unmark a file as favorite in the details view
+    Given I am logged in
+    And I open the details view for "welcome.txt"
+    And I see that the details view is open
+    And I mark the file as favorite in the details view
+    And I see that "welcome.txt" is marked as favorite
+    And I see that the file is marked as favorite in the details view
+    When I unmark the file as favorite in the details view
+    Then I see that "welcome.txt" is not marked as favorite
+    And I see that the file is not marked as favorite in the details view

@@ -207,6 +207,7 @@ class ClientFlowLoginController extends Controller {
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
+	 * @NoSameSiteCookieRequired
 	 * @UseSession
 	 *
 	 * @param string $stateToken
@@ -236,34 +237,6 @@ class ClientFlowLoginController extends Controller {
 				'urlGenerator' => $this->urlGenerator,
 				'stateToken' => $stateToken,
 				'serverHost' => $this->getServerPath(),
-				'oauthState' => $this->session->get('oauth.state'),
-			],
-			'guest'
-		);
-	}
-
-	/**
-	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 * @UseSession
-	 *
-	 * @param string $stateToken
-	 * @param string $clientIdentifier
-	 * @return TemplateResponse
-	 */
-	public function redirectPage($stateToken = '',
-								 $clientIdentifier = '') {
-		if(!$this->isValidToken($stateToken)) {
-			return $this->stateTokenForbiddenResponse();
-		}
-
-		return new TemplateResponse(
-			$this->appName,
-			'loginflow/redirect',
-			[
-				'urlGenerator' => $this->urlGenerator,
-				'stateToken' => $stateToken,
-				'clientIdentifier' => $clientIdentifier,
 				'oauthState' => $this->session->get('oauth.state'),
 			],
 			'guest'

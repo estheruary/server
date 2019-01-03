@@ -286,7 +286,7 @@ class ApiController extends Controller {
 	 * @NoAdminRequired
 	 */
 	public function getGridView() {
-		$status = $this->config->getUserValue($this->userSession->getUser()->getUID(), 'files', 'show_grid', '1') === '1';
+		$status = $this->config->getUserValue($this->userSession->getUser()->getUID(), 'files', 'show_grid', '0') === '1';
 		return new JSONResponse(['gridview' => $status]);
 	}
 
@@ -320,8 +320,9 @@ class ApiController extends Controller {
 	 *
 	 * @NoAdminRequired
 	 *
-	 * @param String
-	 * @return String
+	 * @param string
+	 * @return string
+	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function getNodeType($folderpath) {
 		$node = $this->userFolder->get($folderpath);

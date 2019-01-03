@@ -37,13 +37,15 @@
 					</ul>
 				</template>
 
-				<a v-if="updaterEnabled" href="#" class="button" @click="clickUpdaterButton">{{ t('updatenotification', 'Open updater') }}</a>
-				<a v-if="downloadLink" :href="downloadLink" class="button" :class="{ hidden: !updaterEnabled }">{{ t('updatenotification', 'Download now') }}</a>
-				<div class="whatsNew" v-if="whatsNew">
-					<div class="toggleWhatsNew">
-						<span v-click-outside="hideMenu" @click="toggleMenu">{{ t('updatenotification', 'What\'s new?') }}</span>
-						<div class="popovermenu" :class="{ 'menu-center': true, open: openedWhatsNew }">
-							<popover-menu :menu="whatsNew" />
+				<div>
+					<a v-if="updaterEnabled" href="#" class="button primary" @click="clickUpdaterButton">{{ t('updatenotification', 'Open updater') }}</a>
+					<a v-if="downloadLink" :href="downloadLink" class="button" :class="{ hidden: !updaterEnabled }">{{ t('updatenotification', 'Download now') }}</a>
+					<div class="whatsNew" v-if="whatsNew">
+						<div class="toggleWhatsNew">
+							<a class="button" v-click-outside="hideMenu" @click="toggleMenu">{{ t('updatenotification', 'What\'s new?') }}</a>
+							<div class="popovermenu" :class="{ 'menu-center': true, open: openedWhatsNew }">
+								<popover-menu :menu="whatsNew" />
+							</div>
 						</div>
 					</div>
 				</div>
@@ -51,12 +53,13 @@
 			<template v-else-if="!isUpdateChecked">{{ t('updatenotification', 'The update check is not yet finished. Please refresh the page.') }}</template>
 			<template v-else>
 				{{ t('updatenotification', 'Your version is up to date.') }}
-				<span class="icon-info svg" :title="lastCheckedOnString"></span>
+				<span class="icon-info svg" v-tooltip.auto="lastCheckedOnString"></span>
 			</template>
 
 			<template v-if="!isDefaultUpdateServerURL">
-				<br />
-				<em>{{ t('updatenotification', 'A non-default update server is in use to be checked for updates:') }} <code>{{updateServerURL}}</code></em>
+				<p>
+					<em>{{ t('updatenotification', 'A non-default update server is in use to be checked for updates:') }} <code>{{updateServerURL}}</code></em>
+				</p>
 			</template>
 		</div>
 
@@ -78,7 +81,7 @@
 
 		<p id="oca_updatenotification_groups">
 			{{ t('updatenotification', 'Notify members of the following groups about available updates:') }}
-			<v-select multiple :value="notifyGroups" :options="availableGroups"></v-select><br />
+			<multiselect v-model="notifyGroups" :options="availableGroups" :multiple="true" label="label" track-by="value" :tag-width="75" /><br />
 			<em v-if="currentChannel === 'daily' || currentChannel === 'git'">{{ t('updatenotification', 'Only notification for app updates are available.') }}</em>
 			<em v-if="currentChannel === 'daily'">{{ t('updatenotification', 'The selected update channel makes dedicated notifications for the server obsolete.') }}</em>
 			<em v-if="currentChannel === 'git'">{{ t('updatenotification', 'The selected update channel does not support updates of the server.') }}</em>
@@ -87,18 +90,19 @@
 </template>
 
 <script>
-	import vSelect from 'vue-select';
-	import popoverMenu from './popoverMenu';
+	import { PopoverMenu, Multiselect } from 'nextcloud-vue';
+	import { VTooltip } from 'v-tooltip';
 	import ClickOutside from 'vue-click-outside';
 
 	export default {
 		name: 'root',
 		components: {
-			vSelect,
-			popoverMenu,
+			Multiselect,
+			PopoverMenu,
 		},
 		directives: {
-			ClickOutside
+			ClickOutside,
+			tooltip: VTooltip
 		},
 		data: function () {
 			return {
@@ -153,7 +157,7 @@
 				}
 
 				$.ajax({
-					url: OC.linkToOCS('apps/updatenotification/api/v1/applist', 2) + this.newVersionString,
+					url: OC.linkToOCS('apps/updatenotification/api/v1/applist', 2) + this.newVersion,
 					type: 'GET',
 					beforeSend: function (request) {
 						request.setRequestHeader('Accept', 'application/json');
@@ -193,20 +197,18 @@
 					return t('updatenotification', 'Checking apps for compatible updates');
 				}
 
-				if (this.appstoreDisabled) {
+				if (this.appStoreDisabled) {
 					return t('updatenotification', 'Please make sure your config.php does not set <samp>appstoreenabled</samp> to false.');
 				}
 
-				if (this.appstoreFailed) {
+				if (this.appStoreFailed) {
 					return t('updatenotification', 'Could not connect to the appstore or the appstore returned no updates at all. Search manually for updates or make sure your server has access to the internet and can connect to the appstore.');
 				}
 
 				return this.missingAppUpdates.length === 0 ? t('updatenotification', '<strong>All</strong> apps have an update for this version available', this) : n('updatenotification',
 					'<strong>%n</strong> app has no update for this version available',
 					'<strong>%n</strong> apps have no update for this version available',
-					this.missingAppUpdates.length, {
-						version: this.newVersionString
-					});
+					this.missingAppUpdates.length);
 			},
 
 			productionInfoString: function() {
@@ -249,34 +251,21 @@
 			clickUpdaterButton: function() {
 				$.ajax({
 					url: OC.generateUrl('/apps/updatenotification/credentials')
-				}).success(function(data) {
-					$.ajax({
-						url: OC.getRootPath()+'/updater/',
-						headers: {
-							'X-Updater-Auth': data
-						},
-						method: 'POST',
-						success: function(data){
-							if(data !== 'false') {
-								var body = $('body');
-								$('head').remove();
-								body.html(data);
+				}).success(function(token) {
+					// create a form to send a proper post request to the updater
+					var form = document.createElement('form');
+					form.setAttribute('method', 'post');
+					form.setAttribute('action', OC.getRootPath() + '/updater/');
 
-								// Eval the script elements in the response
-								var dom = $(data);
-								dom.filter('script').each(function() {
-									eval(this.text || this.textContent || this.innerHTML || '');
-								});
+					var hiddenField = document.createElement('input');
+					hiddenField.setAttribute('type', 'hidden');
+					hiddenField.setAttribute('name', 'updater-secret-input');
+					hiddenField.setAttribute('value', token);
 
-								body.removeAttr('id');
-								body.attr('id', 'body-settings');
-							}
-						},
-						error: function() {
-							OC.Notification.showTemporary(t('updatenotification', 'Could not start updater, please try the manual update'));
-							this.updaterEnabled = false;
-						}.bind(this)
-					});
+					form.appendChild(hiddenField);
+
+					document.body.appendChild(form);
+					form.submit();
 				}.bind(this));
 			},
 			changeReleaseChannel: function() {
@@ -310,6 +299,7 @@
 			// Parse server data
 			var data = JSON.parse($('#updatenotification').attr('data-json'));
 
+			this.newVersion = data.newVersion;
 			this.newVersionString = data.newVersionString;
 			this.lastCheckedDate = data.lastChecked;
 			this.isUpdateChecked = data.isUpdateChecked;
@@ -353,10 +343,6 @@
 					this.enableChangeWatcher = true;
 				}.bind(this)
 			});
-		},
-
-		updated: function () {
-			this._$el.find('.icon-info').tooltip({placement: 'right'});
 		}
 	}
 </script>

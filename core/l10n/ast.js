@@ -47,7 +47,6 @@ OC.L10N.register(
     "Show all contacts …" : "Amosar tolos contautos...",
     "Loading your contacts …" : "Cargando los tos contautos...",
     "Looking for {term} …" : "Guetando {term}...",
-    "<a href=\"{docUrl}\">There were problems with the code integrity check. More information…</a>" : "<a href=\"{docUrl}\">Hebo problemes cola comprobación d'integridá del códigu. Más información…</a>",
     "No action available" : "Nun hai aiciones disponibles",
     "Error fetching contact actions" : "Fallu diendo en cata de les aiciones de contautos",
     "Settings" : "Axustes",
@@ -209,7 +208,6 @@ OC.L10N.register(
     "Log in" : "Aniciar sesión",
     "Wrong password." : "Contraseña incorreuta",
     "App token" : "Pase d'aplicación",
-    "Redirecting …" : "Redirixendo...",
     "New password" : "Contraseña nueva",
     "New Password" : "Contraseña nueva",
     "Two-factor authentication" : "Autenticación en dos pasos",
@@ -225,6 +223,7 @@ OC.L10N.register(
     "I know that if I continue doing the update via web UI has the risk, that the request runs into a timeout and could cause data loss, but I have a backup and know how to restore my instance in case of a failure." : "Sé que si sigo faciendo l'anovamientu pela IU web pue escosar el tiempu de la solicitú y causar una perda de datos, pero teo un respaldu y sé cómo restaurar la mio instancia en casu de fallu.",
     "Contact your system administrator if this message persists or appeared unexpectedly." : "Contauta col alministrador si esti problema sigui apaeciendo.",
     "Updated \"%s\" to %s" : "Anováu \"%s\" a %s",
+    "<a href=\"{docUrl}\">There were problems with the code integrity check. More information…</a>" : "<a href=\"{docUrl}\">Hebo problemes cola comprobación d'integridá del códigu. Más información…</a>",
     "Error setting expiration date" : "Fallu afitando la fecha de caducidá",
     "The public link will expire no later than {days} days after it is created" : "L'enllaz públicu va caducar enantes de {days} díes dende la so creación",
     "{{shareInitiatorDisplayName}} shared via link" : "{{shareInitiatorDisplayName}} compartió per enllaz",
@@ -237,11 +236,12 @@ OC.L10N.register(
     "You can click here to return to %s." : "Pues primir equí pa volver a %s.",
     "Stay logged in" : "Caltener sesión",
     "Alternative Logins" : "Anicios de sesión alternativos",
+    "You are about to grant %s access to your %s account." : "Tas a pìques de conceder a %s l'accesu a la to cuenta %s.",
     "Alternative login using app token" : "Aniciu de sesión alternativu usando pase d'aplicación",
+    "Redirecting …" : "Redirixendo...",
     "Add \"%s\" as trusted domain" : "Amestáu \"%s\" como dominiu de confianza",
     "%s will be updated to version %s" : "%s anovaráse a la versión %s",
     "This page will refresh itself when the %s instance is available again." : "Esta páxina refrescaráse sola cuando la instancia %s vuelva tar disponible.",
-    "Thank you for your patience." : "Gracies pola to paciencia.",
-    "You are about to grant %s access to your %s account." : "Tas a pìques de conceder a %s l'accesu a la to cuenta %s."
+    "Thank you for your patience." : "Gracies pola to paciencia."
 },
 "nplurals=2; plural=(n != 1);");

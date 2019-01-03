@@ -192,6 +192,9 @@ var OCdialogs = {
 	*/
 	filepicker:function(title, callback, multiselect, mimetypeFilter, modal, type) {
 		var self = this;
+
+		this.filepicker.sortField = 'name';
+		this.filepicker.sortOrder = 'asc';
 		// avoid opening the picker twice
 		if (this.filepicker.loading) {
 			return;
@@ -236,21 +239,37 @@ var OCdialogs = {
 				multiselect = false;
 			}
 
+			// No grid for IE!
+			if (OC.Util.isIE()) {
+				self.$filePicker.find('#picker-view-toggle').remove();
+				self.$filePicker.find('#picker-filestable').removeClass('view-grid');
+			}
+
 			$('body').append(self.$filePicker);
 
 			self.$showGridView = $('input#picker-showgridview');
 			self.$showGridView.on('change', _.bind(self._onGridviewChange, self));
 
-			self._getGridSettings();
+			if (!OC.Util.isIE()) {
+				self._getGridSettings();
+			}
 
 			self.$filePicker.ready(function() {
+				self.$fileListHeader = self.$filePicker.find('.filelist thead tr');
 				self.$filelist = self.$filePicker.find('.filelist tbody');
+				self.$filelistContainer = self.$filePicker.find('.filelist-container');
 				self.$dirTree = self.$filePicker.find('.dirtree');
 				self.$dirTree.on('click', 'div:not(:last-child)', self, function (event) {
 					self._handleTreeListSelect(event, type);
 				});
 				self.$filelist.on('click', 'tr', function(event) {
 					self._handlePickerClick(event, $(this), type);
+				});
+				self.$fileListHeader.on('click', 'a', function(event) {
+					var dir = self.$filePicker.data('path');
+					self.filepicker.sortField = $(event.currentTarget).data('sort');
+					self.filepicker.sortOrder = self.filepicker.sortOrder === 'asc' ? 'desc' : 'asc';
+					self._fillFilePicker(dir);
 				});
 				self._fillFilePicker('');
 			});
@@ -789,7 +808,7 @@ var OCdialogs = {
 	_getGridSettings: function() {
 		var self = this;
 		$.get(OC.generateUrl('/apps/files/api/v1/showgridview'), function(response) {
-			self.$showGridView.checked = response.gridview;
+			self.$showGridView.get(0).checked = response.gridview;
 			self.$showGridView.next('#picker-view-toggle')
 				.removeClass('icon-toggle-filelist icon-toggle-pictures')
 				.addClass(response.gridview ? 'icon-toggle-filelist' : 'icon-toggle-pictures')
@@ -807,7 +826,6 @@ var OCdialogs = {
 		this.$showGridView.next('#picker-view-toggle')
 			.removeClass('icon-toggle-filelist icon-toggle-pictures')
 			.addClass(show ? 'icon-toggle-filelist' : 'icon-toggle-pictures')
-			
 		$('.list-container').toggleClass('view-grid', show);
 	},
 	_getFilePickerTemplate: function() {
@@ -816,7 +834,7 @@ var OCdialogs = {
 			var self = this;
 			$.get(OC.filePath('core', 'templates', 'filepicker.html'), function(tmpl) {
 				self.$filePickerTemplate = $(tmpl);
-				self.$listTmpl = self.$filePickerTemplate.find('.filelist tr:first-child').detach();
+				self.$listTmpl = self.$filePickerTemplate.find('.filelist tbody tr:first-child').detach();
 				defer.resolve(self.$filePickerTemplate);
 			})
 			.fail(function(jqXHR, textStatus, errorThrown) {
@@ -878,11 +896,20 @@ var OCdialogs = {
 	*/
 	_fillFilePicker:function(dir) {
 		var self = this;
-		this.$filelist.empty().addClass('icon-loading');
+		this.$filelist.empty();
+		this.$filePicker.find('.emptycontent').hide();
+		this.$filelistContainer.addClass('icon-loading');
 		this.$filePicker.data('path', dir);
 		var filter = this.$filePicker.data('mimetype');
 		if (typeof(filter) === "string") {
 			filter = [filter];
+		}
+		self.$fileListHeader.find('.sort-indicator').addClass('hidden').removeClass('icon-triangle-n').removeClass('icon-triangle-s');
+		self.$fileListHeader.find('[data-sort=' + self.filepicker.sortField + '] .sort-indicator').removeClass('hidden');
+		if (self.filepicker.sortOrder === 'asc') {
+			self.$fileListHeader.find('[data-sort=' + self.filepicker.sortField + '] .sort-indicator').addClass('icon-triangle-n');
+		} else {
+			self.$fileListHeader.find('[data-sort=' + self.filepicker.sortField + '] .sort-indicator').addClass('icon-triangle-s');
 		}
 		self.filepicker.filesClient.getFolderContents(dir).then(function(status, files) {
 			if (filter && filter.length > 0 && filter.indexOf('*') === -1) {
@@ -890,22 +917,47 @@ var OCdialogs = {
 					return file.type === 'dir' || filter.indexOf(file.mimetype) !== -1;
 				});
 			}
-			files = files.sort(function(a, b) {
-				if (a.type === 'dir' && b.type !== 'dir') {
-					return -1;
-				} else if(a.type !== 'dir' && b.type === 'dir') {
-					return 1;
-				} else {
-					return a.name.localeCompare(b.name, undefined, {numeric: true});
+
+			var Comparators = {
+				name: function(fileInfo1, fileInfo2) {
+					if (fileInfo1.type === 'dir' && fileInfo2.type !== 'dir') {
+						return -1;
+					}
+					if (fileInfo1.type !== 'dir' && fileInfo2.type === 'dir') {
+						return 1;
+					}
+					return OC.Util.naturalSortCompare(fileInfo1.name, fileInfo2.name);
+				},
+				size: function(fileInfo1, fileInfo2) {
+					return fileInfo1.size - fileInfo2.size;
+				},
+				mtime: function(fileInfo1, fileInfo2) {
+					return fileInfo1.mtime - fileInfo2.mtime;
 				}
+			};
+			var comparator = Comparators[self.filepicker.sortField] || Comparators.name;
+			files = files.sort(function(file1, file2) {
+				var isFavorite = function(fileInfo) {
+					return fileInfo.tags && fileInfo.tags.indexOf(OC.TAG_FAVORITE) >= 0;
+				};
+
+				if (isFavorite(file1) && !isFavorite(file2)) {
+					return -1;
+				} else if (!isFavorite(file1) && isFavorite(file2)) {
+					return 1;
+				}
+
+				return self.filepicker.sortOrder === 'asc' ? comparator(file1, file2) : -comparator(file1, file2);
 			});
 
 			self._fillSlug();
 
 			if (files.length === 0) {
 				self.$filePicker.find('.emptycontent').show();
+				self.$fileListHeader.hide();
 			} else {
 				self.$filePicker.find('.emptycontent').hide();
+				self.$fileListHeader.show();
 			}
 
 			$.each(files, function(idx, entry) {
@@ -945,7 +997,7 @@ var OCdialogs = {
 				self.$filelist.append($row);
 			});
 
-			self.$filelist.removeClass('icon-loading');
+			self.$filelistContainer.removeClass('icon-loading');
 		});
 	},
 	/**

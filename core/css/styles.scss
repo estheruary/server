@@ -146,7 +146,7 @@ body {
 /* SCROLLING */
 
 ::-webkit-scrollbar {
-	width: 5px;
+	width: 9px;
 	height: 5px;
 }
 
@@ -196,6 +196,7 @@ body {
 			display: flex;
 			height: 36px;
 			width: 36px;
+			padding: 9px; // width - border - icon width = 18px
 			align-items: center;
 			justify-content: center;
 		}
@@ -766,12 +767,51 @@ code {
 		background-color: var(--color-main-background);
 		width: 100%;
 	}
-	#filestable.filelist {
+	#picker-filestable.filelist {
 		/* prevent the filepicker to overflow */
 		min-width: initial;
 		margin-bottom: 50px;
-	}
-	.filelist {
+		thead {
+			tr {
+				border-bottom: 1px solid var(--color-border);
+				background-color: var(--color-main-background);
+				th {
+					width: 80%;
+					border: none;
+				}
+			}
+		}
+		th .columntitle {
+			display: block;
+			padding: 15px;
+			height: 50px;
+			box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			vertical-align: middle;
+		}
+		th .columntitle.name {
+			padding-left: 5px;
+			margin-left: 50px;
+		}
+
+		th .sort-indicator {
+			width: 10px;
+			height: 8px;
+			margin-left: 5px;
+			display: inline-block;
+			vertical-align: text-bottom;
+			opacity: .3;
+		}
+		.sort-indicator.hidden,
+		th:hover .sort-indicator.hidden,
+		th:focus .sort-indicator.hidden {
+			visibility: hidden;
+		}
+		th:hover .sort-indicator.hidden,
+		th:focus .sort-indicator.hidden {
+			visibility: visible;
+		}
+
 		td {
 			padding: 14px;
 			border-bottom: 1px solid var(--color-border);
@@ -830,6 +870,7 @@ code {
 							background-position: center top;
 							background-size: contain;
 							line-height: $name-height;
+							max-width: none;
 						}
 						&.filesize {
 							line-height: $name-height / 3;

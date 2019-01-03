@@ -107,6 +107,33 @@ describe('OC.SetupChecks tests', function() {
 		});
 	});
 
+	describe('checkWOFF2Loading', function() {
+		it('should fail with another response status code than the expected one', function(done) {
+			var async = OC.SetupChecks.checkWOFF2Loading(OC.filePath('core', '', 'fonts/Nunito-Regular.woff2'), 'http://example.org/PLACEHOLDER');
+
+			suite.server.requests[0].respond(302);
+
+			async.done(function( data, s, x ){
+				expect(data).toEqual([{
+					msg: 'Your web server is not properly set up to deliver .woff2 files. This is typically an issue with the Nginx configuration. For Nextcloud 15 it needs an adjustement to also deliver .woff2 files. Compare your Nginx configuration to the recommended configuration in our <a href="http://example.org/admin-nginx" rel="noreferrer noopener">documentation</a>.',
+					type: OC.SetupChecks.MESSAGE_TYPE_WARNING
+				}]);
+				done();
+			});
+		});
+
+		it('should return no error with the expected response status code', function(done) {
+			var async = OC.SetupChecks.checkWOFF2Loading(OC.filePath('core', '', 'fonts/Nunito-Regular.woff2'), 'http://example.org/PLACEHOLDER');
+
+			suite.server.requests[0].respond(200);
+
+			async.done(function( data, s, x ){
+				expect(data).toEqual([]);
+				done();
+			});
+		});
+	});
+
 	describe('checkDataProtected', function() {
 
 		oc_dataURL = "data";
@@ -183,7 +210,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -232,7 +261,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -282,7 +313,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -330,7 +363,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -376,7 +411,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -424,7 +461,9 @@ describe('OC.SetupChecks tests', function() {
 					isMemoryLimitSufficient: true,
 					appDirsWithDifferentOwner: [
 						'/some/path'
-					]
+					],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -470,7 +509,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -516,7 +557,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -561,8 +604,10 @@ describe('OC.SetupChecks tests', function() {
 					cronInfo: {
 						diffInSeconds: 0
 					},
+					isMemoryLimitSufficient: false,
 					appDirsWithDifferentOwner: [],
-					isMemoryLimitSufficient: false
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -629,7 +674,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -676,7 +723,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -723,7 +772,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 
@@ -770,7 +821,9 @@ describe('OC.SetupChecks tests', function() {
 						diffInSeconds: 0
 					},
 					isMemoryLimitSufficient: true,
-					appDirsWithDifferentOwner: []
+					appDirsWithDifferentOwner: [],
+					recommendedPHPModules: [],
+					pendingBigIntConversionColumns: []
 				})
 			);
 

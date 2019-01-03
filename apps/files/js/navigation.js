@@ -154,7 +154,12 @@
 			this.$currentContent = $('#app-content-' + (typeof itemView === 'string' && itemView !== '' ? itemView : itemId));
 			this.$currentContent.removeClass('hidden');
 			if (!options || !options.silent) {
-				this.$currentContent.trigger(jQuery.Event('show'));
+				this.$currentContent.trigger(jQuery.Event('show', {
+					itemId: itemId,
+					previousItemId: oldItemId,
+					dir: itemDir,
+					view: itemView
+				}));
 				this.$el.trigger(
 					new $.Event('itemChanged', {
 						itemId: itemId,
@@ -278,8 +283,11 @@
 		 * This method allows easy swapping of elements.
 		 */
 		swap: function (list, j, i) {
-			list[i].before(list[j]);
-			list[j].before(list[i]);
+			var before = function(node, insertNode) {
+				node.parentNode.insertBefore(insertNode, node);
+			}
+			before(list[i], list[j]);
+			before(list[j], list[i]);
 		}
 
 	};

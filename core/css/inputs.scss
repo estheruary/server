@@ -85,14 +85,22 @@ div[contenteditable=true],
 	/* Primary action button, use sparingly */
 	&.primary {
 		background-color: var(--color-primary-element);
-		border: 1px solid var(--color-primary-text);
+		border-color: var(--color-primary-element);
 		color: var(--color-primary-text);
 		cursor: pointer;
+
+		/* Apply border to primary button if on log in page (and not in a dark container) or if in header */
+		#body-login :not(.body-login-container) &,
+		#header & {
+			border-color: var(--color-primary-text);
+		}
+
 		&:not(:disabled) {
 			&:hover,
 			&:focus,
-			&:active  {
-				background-color: var(--color-primary-element-light)
+			&:active {
+				background-color: var(--color-primary-element-light);
+				border-color: var(--color-primary-element-light);
 			}
 			&:active {
 				color: var(--color-primary-text-dark);
@@ -102,6 +110,7 @@ div[contenteditable=true],
 			// opacity is already defined to .5 if disabled
 			background-color: var(--color-primary-element);
 			color: var(--color-primary-text-dark);
+			cursor: default;
 		}
 	}
 }
@@ -242,6 +251,7 @@ input {
 			width: 34px;
 			padding: 7px 6px;
 			cursor: pointer;
+			margin-right: 0;
 			&:disabled {
 				cursor: default;
 				@include icon-color('confirm-fade', 'actions', $color-black, 2, true);
@@ -292,10 +302,9 @@ select,
 }
 
 /* Radio & Checkboxes */
-input, label {
-	--color-checkbox-radio-disabled: nc-darken($color-main-background, 27%);
-	--color-checkbox-radio-border: nc-darken($color-main-background, 47%);
-}
+$color-checkbox-radio-disabled: nc-darken($color-main-background, 27%);
+$color-checkbox-radio-border: nc-darken($color-main-background, 47%);
+
 input {
 	&[type='checkbox'],
 	&[type='radio'] {
@@ -323,7 +332,7 @@ input {
 				border-radius: 50%;
 				margin: 3px;
 				margin-top: 1px;
-				border: 1px solid var(--color-checkbox-radio-border);
+				border: 1px solid $color-checkbox-radio-border;
 			}
 			&:not(:disabled):not(:checked) + label:hover:before,
 			&:focus + label:before {
@@ -338,11 +347,11 @@ input {
 				border-color: var(--color-primary-element);
 			}
 			&:disabled + label:before {
-				border: 1px solid var(--color-checkbox-radio-border);
-				background-color: var(--color-checkbox-radio-disabled) !important; /* override other status */
+				border: 1px solid $color-checkbox-radio-border;
+				background-color: $color-checkbox-radio-disabled !important; /* override other status */
 			}
 			&:checked:disabled + label:before {
-				background-color: var(--color-checkbox-radio-disabled);
+				background-color: $color-checkbox-radio-disabled;
 			}
 		}
 		&.checkbox {

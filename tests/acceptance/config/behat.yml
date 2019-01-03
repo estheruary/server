@@ -16,9 +16,11 @@ default:
         - FeatureContext
         - FileListContext
         - FilesAppContext
-        - FilesSharingAppContext
+        - FilesAppSharingContext
         - LoginPageContext
         - NotificationContext
+        - PublicShareContext
+        - SearchContext
         - SettingsContext
         - SettingsMenuContext
         - ThemingAppContext
@@ -42,9 +44,11 @@ default:
         - FeatureContext
         - FileListContext
         - FilesAppContext
-        - FilesSharingAppContext
+        - FilesAppSharingContext
         - LoginPageContext
         - NotificationContext
+        - PublicShareContext
+        - SearchContext
         - SettingsContext
         - SettingsMenuContext
         - ThemingAppContext
@@ -61,6 +65,9 @@ default:
           selenium2:
             wd_host: %selenium.server%
         Jane:
+          selenium2:
+            wd_host: %selenium.server%
+        Jim:
           selenium2:
             wd_host: %selenium.server%
         Rubeus:

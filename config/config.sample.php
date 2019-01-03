@@ -422,6 +422,26 @@ $CONFIG = array(
 'mail_send_plaintext_only' => false,
 
 /**
+ * This depends on ``mail_smtpmode``. Array of additional streams options that
+ * will be passed to underlying Swift mailer implementation.
+ * Defaults to an empty array.
+ */
+'mail_smtpstreamoptions' => array(),
+
+/**
+ * Which mode is used for sendmail/qmail: ``smtp`` or ``pipe``.
+ *
+ * For ``smtp`` the sendmail binary is started with the parameter ``-bs``:
+ *   - Use the SMTP protocol on standard input and output.
+ *
+ * For ``pipe`` the binary is started with the parameters ``-t``:
+ *   - Read message from STDIN and extract recipients.
+ *
+ * Defaults to ``smtp``
+ */
+'mail_sendmailmode' => 'smtp',
+
+/**
  * Proxy Configurations
  */
 
@@ -655,6 +675,26 @@ $CONFIG = array(
  * Defaults to ``true``
  */
 'has_internet_connection' => true,
+
+/**
+ * Which domains to request to determine the availability of an Internet
+ * connection. If none of these hosts are reachable, the administration panel
+ * will show a warning. Set to an empty list to not do any such checks (warning
+ * will still be shown).
+ *
+ * Defaults to the following domains:
+ *
+ *  - www.nextcloud.com
+ *  - www.startpage.com
+ *  - www.eff.org
+ *  - www.edri.org
+ */
+'connectivity_check_domains' => array(
+	'www.nextcloud.com',
+	'www.startpage.com',
+	'www.eff.org',
+	'www.edri.org'
+),
 
 /**
  * Allows Nextcloud to verify a working .well-known URL redirects. This is done

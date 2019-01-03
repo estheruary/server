@@ -1562,13 +1562,14 @@ function initCore() {
 
 	var resizeMenu = function() {
 		var appList = $('#appmenu li');
-		var headerWidth = $('.header-left').outerWidth() - $('#nextcloud').outerWidth();
+		var rightHeaderWidth = $('.header-right').outerWidth();
+		var headerWidth = $('header').outerWidth();
 		var usePercentualAppMenuLimit = 0.33;
 		var minAppsDesktop = 8;
-		var availableWidth = headerWidth - $(appList).width();
+		var availableWidth =  headerWidth - $('#nextcloud').outerWidth() - (rightHeaderWidth > 210 ? rightHeaderWidth : 210)
 		var isMobile = $(window).width() < 768;
 		if (!isMobile) {
-			availableWidth = headerWidth * usePercentualAppMenuLimit;
+			availableWidth = availableWidth * usePercentualAppMenuLimit;
 		}
 		var appCount = Math.floor((availableWidth / $(appList).width()));
 		if (isMobile && appCount > minAppsDesktop) {
@@ -1613,7 +1614,7 @@ function initCore() {
 		}
 	};
 	$(window).resize(resizeMenu);
-	resizeMenu();
+	setTimeout(resizeMenu, 0);
 
 	// just add snapper for logged in users
 	if($('#app-navigation').length && !$('html').hasClass('lte9')) {
@@ -1750,7 +1751,7 @@ OC.PasswordConfirmation = {
 	/**
 	 * @param {function} callback
 	 */
-	requirePasswordConfirmation: function(callback, options) {
+	requirePasswordConfirmation: function(callback, options, rejectCallback) {
 		options = typeof options !== 'undefined' ? options : {};
 		var defaults = {
 			title: t('core','Authentication required'),
@@ -1774,6 +1775,8 @@ OC.PasswordConfirmation = {
 				function (result, password) {
 					if (result && password !== '') {
 						self._confirmPassword(password, config);
+					} else if (_.isFunction(rejectCallback)) {
+						rejectCallback()
 					}
 				},
 				true,
@@ -1787,6 +1790,7 @@ OC.PasswordConfirmation = {
 					var $error = $('<p></p>').addClass('msg warning').text(config.error);
 				}
 				$dialog.find('.oc-dialog-content').append($error);
+				$dialog.find('.oc-dialog-buttonrow').addClass('aside');
 
 				var $buttons = $dialog.find('button');
 				$buttons.eq(0).hide();

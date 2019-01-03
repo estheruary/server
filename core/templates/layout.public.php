@@ -51,18 +51,18 @@
 			?>
 		<div class="header-right">
 			<span id="header-primary-action" class="<?php if($template->getActionCount() === 1) {  p($primary->getIcon()); } ?>">
-				<a href="<?php p($primary->getLink()); ?>">
+				<a href="<?php p($primary->getLink()); ?>" class="primary button">
 					<span><?php p($primary->getLabel()) ?></span>
 				</a>
 			</span>
-			<?php if($template->getActionCount()>1) { ?>
+			<?php if($template->getActionCount() > 1) { ?>
 			<div id="header-secondary-action">
 				<span id="header-actions-toggle" class="menutoggle icon-more-white"></span>
 				<div id="header-actions-menu" class="popovermenu menu">
 					<ul>
 						<?php
 							/** @var \OCP\AppFramework\Http\Template\IMenuAction $action */
-							foreach($template->getOtherActions() as $action) {
+							foreach($others as $action) {
 								print_unescaped($action->render());
 							}
 						?>
@@ -83,7 +83,9 @@
 		if ($_['showSimpleSignUpLink']) {
 			?>
 			<p>
-				<a href="https://nextcloud.com/signup/" target="_blank" rel="noreferrer noopener">Get your own free account</a>
+				<a href="https://nextcloud.com/signup/" target="_blank" rel="noreferrer noopener">
+					<?php p($l->t('Get your own free account')); ?>
+				</a>
 			</p>
 			<?php
 		}

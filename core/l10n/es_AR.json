@@ -55,7 +55,6 @@
     "Show all contacts …" : "Mostrar todos los contactos ...",
     "Loading your contacts …" : "Cargando sus contactos ... ",
     "Looking for {term} …" : "Buscando {term} ...",
-    "<a href=\"{docUrl}\">There were problems with the code integrity check. More information…</a>" : "<a href=\"{docUrl}\">Se presentaron problemas con la verificación de integridad del código. Mayor información ...</a>",
     "No action available" : "No hay acciones disponibles",
     "Error fetching contact actions" : "Se presentó un error al traer las acciónes de contatos",
     "Settings" : "Configuraciones ",
@@ -235,7 +234,6 @@
     "Wrong password." : "Contraseña inválida. ",
     "App token" : "Ficha de la aplicación",
     "Account access" : "Acceso a la cuenta",
-    "Redirecting …" : "Redireccionando ... ",
     "New password" : "Nueva contraseña",
     "New Password" : "Nueva Contraseña",
     "Two-factor authentication" : "Autenticación de dos-factores",
@@ -257,6 +255,7 @@
     "This %s instance is currently in maintenance mode, which may take a while." : "Esta instancia %s se encuentra actualmente en modo mantenimiento, que podría tomar algo de tiempo. ",
     "Contact your system administrator if this message persists or appeared unexpectedly." : "Contacte a su administrador del sistema si este mensaje persiste o se presentó de manera inesperada.",
     "Updated \"%s\" to %s" : "Actualizando \"%s\" a %s",
+    "<a href=\"{docUrl}\">There were problems with the code integrity check. More information…</a>" : "<a href=\"{docUrl}\">Se presentaron problemas con la verificación de integridad del código. Mayor información ...</a>",
     "Error setting expiration date" : "Se presentó un error al establecer la fecha de expiración",
     "The public link will expire no later than {days} days after it is created" : "El link público expirará a los {days} días de haber sido creado",
     "{{shareInitiatorDisplayName}} shared via link" : "{{shareInitiatorDisplayName}} ha compatido mediante un link",
@@ -270,12 +269,13 @@
     "You can click here to return to %s." : "Puede hacer click aquí para regresar a %s.",
     "Stay logged in" : "Mantener la sesión abierta",
     "Alternative Logins" : "Accesos Alternativos",
+    "You are about to grant %s access to your %s account." : "Está a punto de concederle a \"%s\" acceso a su cuenta %s.",
     "Alternative login using app token" : "Inicio de sesión alternativo usando la ficha de la aplicación",
+    "Redirecting …" : "Redireccionando ... ",
     "Enhanced security is enabled for your account. Please authenticate using a second factor." : "La seguridad mejorada está habilitada para su cuenta. Favor de autenticarse usando un segundo factor. ",
     "Add \"%s\" as trusted domain" : "Agregar \"%s\" como un dominio de confianza",
     "%s will be updated to version %s" : "%s será actualizado a la versión %s",
     "This page will refresh itself when the %s instance is available again." : "Esta página se actualizará sola cuando la instancia %s esté disponible de nuevo. ",
-    "Thank you for your patience." : "Gracias por su paciencia.",
-    "You are about to grant %s access to your %s account." : "Está a punto de concederle a \"%s\" acceso a su cuenta %s."
+    "Thank you for your patience." : "Gracias por su paciencia."
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

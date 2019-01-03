@@ -14,6 +14,7 @@ OC.L10N.register(
     "Home" : "Koti",
     "Close" : "Sulje",
     "Could not create folder \"{dir}\"" : "Kansiota \"{dir}\" ei voitu luoda",
+    "This will stop your current uploads." : "Tämä pysäyttää meneillään olevat lähetykset.",
     "Upload cancelled." : "Lähetys peruttu.",
     "…" : "…",
     "Processing files …" : "Käsitellään tiedostoja…",
@@ -21,6 +22,7 @@ OC.L10N.register(
     "Not enough free space, you are uploading {size1} but only {size2} is left" : "Ei riittävästi vapaata tilaa. Lähetyksesi koko on {size1}, mutta vain {size2} on jäljellä",
     "Target folder \"{dir}\" does not exist any more" : "Kohdekansio \"{dir}\" ei ole enää olemassa",
     "Not enough free space" : "Ei tarpeeksi vapaata tilaa",
+    "An unknown error has occurred" : "Tapahtui tuntematon virhe",
     "Uploading …" : "Lähetetään…",
     "{loadedSize} of {totalSize} ({bitrate})" : "{loadedSize}/{totalSize} ({bitrate})",
     "Uploading that item is not supported" : "Kyseisen kohteen lähettäminen ei ole tuettu",
@@ -42,6 +44,7 @@ OC.L10N.register(
     "This directory is unavailable, please check the logs or contact the administrator" : "Hakemisto ei ole käytettävissä. Tarkista lokit tai ole yhteydessä ylläpitoon.",
     "Could not move \"{file}\", target exists" : "Tiedoston \"{file}\" siirtäminen ei onnistunut, kohde on olemassa",
     "Could not move \"{file}\"" : "Tiedoston \"{file}\" siirtäminen ei onnistunut",
+    "copy" : "kopio",
     "Could not copy \"{file}\", target exists" : "Tiedostoa \"{file}\" ei voitu kopioida, kohde on olemassa",
     "Could not copy \"{file}\"" : "Tiedostoa \"{file}\" ei voitu kopioida",
     "{newName} already exists" : "{newName} on jo olemassa",
@@ -151,11 +154,7 @@ OC.L10N.register(
     "Deleted shares" : "Poistetut jaot",
     "Text file" : "Tekstitiedosto",
     "New text file.txt" : "Uusi tekstitiedosto.txt",
-    "Move" : "Siirrä",
     "Target folder" : "Kohdekansio",
-    "A new file or folder has been <strong>deleted</strong>" : "Uusi tiedosto tai kansio on <strong>poistettu</strong>",
-    "A new file or folder has been <strong>restored</strong>" : "Uusi tiedosto tai kansio on <strong>palautettu</strong>",
-    "%s of %s used" : "%s / %s käytetty",
-    "Use this address to <a href=\"%s\" target=\"_blank\" rel=\"noreferrer\">access your Files via WebDAV</a>" : "Käytä tätä osoitetetta <a href=\"%s\" target=\"_blank\" rel=\"noreferrer\">käyttääksesi tiedostojasi WebDAV:in välityksellä</a>"
+    "%s of %s used" : "%s / %s käytetty"
 },
 "nplurals=2; plural=(n != 1);");

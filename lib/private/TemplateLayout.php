@@ -75,12 +75,6 @@ class TemplateLayout extends \OC_Template {
 				$this->assign('bodyid', 'body-user');
 			}
 
-			// Code integrity notification
-			$integrityChecker = \OC::$server->getIntegrityCodeChecker();
-			if(\OC_User::isAdminUser(\OC_User::getUser()) && $integrityChecker->isCodeCheckEnforced() && !$integrityChecker->hasPassedCheck()) {
-				\OCP\Util::addScript('core', 'integritycheck-failed-notification');
-			}
-
 			// Add navigation entry
 			$this->assign( 'application', '');
 			$this->assign( 'appid', $appId );
@@ -216,7 +210,14 @@ class TemplateLayout extends \OC_Template {
 			if (substr($file, -strlen('print.css')) === 'print.css') {
 				$this->append( 'printcssfiles', $web.'/'.$file . $this->getVersionHashSuffix() );
 			} else {
-				$this->append( 'cssfiles', $web.'/'.$file . $this->getVersionHashSuffix($web, $file)  );
+				$suffix = $this->getVersionHashSuffix($web, $file);
+
+				if (strpos($file, '?v=') == false) {
+					$this->append( 'cssfiles', $web.'/'.$file . $suffix);
+				} else {
+					$this->append( 'cssfiles', $web.'/'.$file . '-' . substr($suffix, 3));
+				}
+
 			}
 		}
 	}

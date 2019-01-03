@@ -78,12 +78,15 @@ input {
 		transform: translate(-50%, -50%);
 		background: #fff;
 		color: #333;
-		border-radius: var(--border-radius);
-		box-shadow: 0 0 7px #888;
+		border-radius: var(--border-radius-large);
+		box-shadow: 0 0 10px var(--color-box-shadow);
 		padding: 15px;
-		.jcrop-holder {
-			box-shadow: 0 0 7px #888;
+		.jcrop-holder,
+		.jcrop-holder img,
+		img.jcrop-preview  {
+			border-radius: var(--border-radius);
 		}
+
 		.button {
 			margin-top: 15px;
 		}
@@ -424,11 +427,22 @@ table.nostyle {
 		}
 	}
 	.token-list td {
+		border-top: 1px solid var(--color-border);
+		max-width: 200px;
+		white-space: normal;
+		vertical-align: middle;
+		position: relative;
+
 		&%icon {
 			overflow: visible;
 			position: relative;
 			width: 16px;
 		}
+
+		&.token-name {
+			padding: 10px 0;
+		}
+
 		&.more {
 			@extend %icon;
 		}
@@ -441,20 +455,13 @@ table.nostyle {
 				height: 44px;
 			}
 		}
-		border-top: 1px solid var(--color-border);
-		text-overflow: ellipsis;
-		max-width: 200px;
-		white-space: nowrap;
-		overflow: hidden;
-		vertical-align: middle;
-		position: relative;
 	}
 	tr > *:nth-child(3) {
 		text-align: right;
 	}
 	.token-list {
 		td > a.icon-more {
-			transition: opacity 0.5s;
+			transition: opacity var(--animation-quick);
 		}
 		a.icon-more {
 			padding: 14px;
@@ -465,8 +472,9 @@ table.nostyle {
 		}
 		tr {
 			&:hover td > a.icon,
+			td > a.icon:focus,
 			&.active td > a.icon {
-				opacity: 0.7;
+				opacity: 1;
 			}
 		}
 	}
@@ -900,7 +908,7 @@ span.version {
 	}
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: $breakpoint-mobile) {
 	.store .section {
 		width: 50%;
 	}
@@ -1230,7 +1238,7 @@ table.grid td.date {
 
 .icon-info {
 	padding: 11px 20px;
-	vertical-align: text-bottom;
+	vertical-align: super;
 }
 
 #shareAPI h2, #encryptionAPI h2, #mail_general_settings h2 {

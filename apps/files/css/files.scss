@@ -55,6 +55,10 @@
 	position: relative;
 	width: 100%;
 	min-width: 250px;
+	// hide table if emptycontent is not hidden
+	#emptycontent:not(.hidden) ~ & {
+		display: none;
+	}
 }
 
 /* fit app list view heights */
@@ -149,6 +153,7 @@
 #filestable tbody tr.highlighted .name:focus,
 #filestable tbody tr.selected,
 #filestable tbody tr.searchresult,
+#filestable tbody tr:hover .filename form,
 table tr.mouseOver td {
 	transition: background-color 0.3s ease;
 	background-color: var(--color-background-dark);
@@ -328,9 +333,13 @@ table td.filename .thumbnail {
 }
 table td.filename input.filename {
 	width: 70%;
-	margin-top: 9px;
 	margin-left: 48px;
 	cursor: text;
+}
+table td.filename form {
+	margin-top: -40px;
+	position: relative;
+	top: -6px;
 }
 
 table td.filename a, table td.login, table td.logout, table td.download, table td.upload, table td.create, table td.delete { padding:3px 8px 8px 3px; }
@@ -904,6 +913,16 @@ table.dragshadow td.size {
 						}
 					}
 				}
+
+				form {
+					padding: 3px 14px;
+					border-radius: var(--border-radius);
+
+					input.filename {
+						width: 100%;
+						margin-left: 0;
+					}
+				}
 			}
 
 			/* No space for filesize and date in grid view */
@@ -982,6 +1001,9 @@ table.dragshadow td.size {
 	margin: 0;
 	padding: 22px;
 	opacity: .5;
+	position: fixed;
+	right: 0;
+	z-index: 100;
 
 	&:hover,
 	&:focus,

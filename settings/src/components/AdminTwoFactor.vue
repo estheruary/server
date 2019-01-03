@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<p>
+		<p class="settings-hint">
 			{{ t('settings', 'Two-factor authentication can be enforced for all	users and specific groups. If they do not have a two-factor provider configured, they will be unable to log into the system.') }}
 		</p>
 		<p v-if="loading">
@@ -48,6 +48,12 @@
 						 :show-no-options="false"
 						 :close-on-select="false">
 			</Multiselect>
+		</p>
+		<p>
+			<em>
+				<!-- this text is also found in the documentation. update it there as well if it ever changes -->
+				{{ t('settings', 'When groups are selected/excluded, they use the following logic to determine if a user has 2FA enforced: If no groups are selected, 2FA is enabled for everyone except members of the excluded groups. If groups are selected, 2FA is enabled for all members of these. If a user is both in a selected and excluded group, the selected takes precedence and 2FA is enforced.') }}
+			</em>
 		</p>
 		<p>
 			<button class="button primary"

@@ -45,14 +45,17 @@
 		/** @type {string} **/
 		password: '',
 
+		/** @type {string} **/
+		newShareId: 'new-share',
+
 		events: {
 			// open menu
 			'click .share-menu .icon-more': 'onToggleMenu',
 			// hide download
 			'change .hideDownloadCheckbox': 'onHideDownloadChange',
 			// password
-			'focusout input.linkPassText': 'onPasswordEntered',
-			'keyup input.linkPassText': 'onPasswordKeyUp',
+			'click input.share-pass-submit': 'onPasswordEntered', 
+			'keyup input.linkPassText': 'onPasswordKeyUp', // check for the enter key
 			'change .showPasswordCheckbox': 'onShowPasswordClick',
 			'change .passwordByTalkCheckbox': 'onPasswordByTalkChange',
 			'change .publicEditingCheckbox': 'onAllowPublicEditingChange',
@@ -226,8 +229,8 @@
 			// We need a password before the share creation
 			if (isPasswordEnforced && !this.showPending && this.password === '') {
 				this.showPending = shareId;
-				this.render();
-				$li.find('#enforcedPassText').focus();
+				var self = this.render();
+				self.$el.find('.pending #enforcedPassText').focus();
 			} else {
 				// else, we have a password or it is not enforced
 				$.when(this.model.saveLinkShare(shareData, {
@@ -248,11 +251,23 @@
 						}
 					},
 					error: function() {
+						// empty function to override the default Dialog warning
+					}
+				})).fail(function(response) {
+					// password failure? Show error
+					self.password = ''
+					if (isPasswordEnforced && response && response.responseJSON && response.responseJSON.ocs.meta && response.responseJSON.ocs.meta.message) {
+						$input = self.$el.find('.pending #enforcedPassText')
+						$input.tooltip('destroy');
+						$input.attr('title', response.responseJSON.ocs.meta.message);
+						$input.tooltip({placement: 'bottom', trigger: 'manual'});
+						$input.tooltip('show');
+					} else {
 						OC.Notification.showTemporary(t('core', 'Unable to create a link share'));
 						$loading.addClass('hidden');
 						$li.find('.icon').removeClass('hidden');
 					}
-				})).then(function(response) {
+				}).then(function(response) {
 					// resolve before success
 					newShareId = response.ocs.data.id
 				});
@@ -366,11 +381,12 @@
 				},
 				error: function(model, msg) {
 					// destroy old tooltips
-					$input.tooltip('destroy');
+					var $container = $input.parent();
+					$container.tooltip('destroy');
 					$input.addClass('error');
-					$input.attr('title', msg);
-					$input.tooltip({placement: 'bottom', trigger: 'manual'});
-					$input.tooltip('show');
+					$container.attr('title', msg);
+					$container.tooltip({placement: 'bottom', trigger: 'manual'});
+					$container.tooltip('show');
 				}
 			});
 		},
@@ -650,7 +666,8 @@
 				newShareLabel: t('core', 'Share link'),
 				newShareTitle: t('core', 'New share link'),
 				pendingPopoverMenu: pendingPopoverMenu,
-				showPending: this.showPending === 'new',
+				showPending: this.showPending === this.newShareId,
+				newShareId: this.newShareId,
 			}));
 
 			this.delegateEvents();
@@ -809,12 +826,13 @@
 			return _.extend({}, share, {
 				cid: share.id,
 				shareAllowed: true,
-				linkShareLabel: share.label !== '' ? share.label : t('core', 'Share link'),
+				linkShareLabel: share.label ? share.label : t('core', 'Share link'),
 				popoverMenu: {},
 				shareLinkURL: share.url,
 				newShareTitle: t('core', 'New share link'),
 				copyLabel: t('core', 'Copy link'),
 				showPending: this.showPending === share.id,
+				linkShareCreationDate: t('core', 'Created on {time}', { time: moment(share.stime * 1000).format('LLLL') })
 			})
 		},
 
@@ -851,7 +869,6 @@
 			var isTalkEnabled = oc_appswebroots['spreed'] !== undefined;
 			var sendPasswordByTalk = share.sendPasswordByTalk;
 
-			var showHideDownloadCheckbox = !this.model.isFolder();
 			var hideDownload = share.hideDownload;
 
 			var maxDate = null;
@@ -888,7 +905,6 @@
 				shareNote: share.note,
 				hasNote: share.note !== '',
 				maxDate: maxDate,
-				showHideDownloadCheckbox: showHideDownloadCheckbox,
 				hideDownload: hideDownload,
 				isExpirationEnforced: isExpirationEnforced,
 			}

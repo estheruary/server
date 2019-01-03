@@ -272,6 +272,7 @@ class DefaultShareProvider implements IShareProvider {
 			$qb = $this->dbConn->getQueryBuilder();
 			$qb->update('share')
 				->where($qb->expr()->eq('parent', $qb->createNamedParameter($share->getId())))
+				->andWhere($qb->expr()->eq('share_type', $qb->createNamedParameter(self::SHARE_TYPE_USERGROUP)))
 				->set('uid_owner', $qb->createNamedParameter($share->getShareOwner()))
 				->set('uid_initiator', $qb->createNamedParameter($share->getSharedBy()))
 				->set('item_source', $qb->createNamedParameter($share->getNode()->getId()))
@@ -623,12 +624,14 @@ class DefaultShareProvider implements IShareProvider {
 		if ($reshares === false) {
 			$qb->andWhere($qb->expr()->eq('uid_initiator', $qb->createNamedParameter($userId)));
 		} else {
-			$qb->andWhere(
-				$qb->expr()->orX(
-					$qb->expr()->eq('uid_owner', $qb->createNamedParameter($userId)),
-					$qb->expr()->eq('uid_initiator', $qb->createNamedParameter($userId))
-				)
-			);
+			if ($node === null) {
+				$qb->andWhere(
+					$qb->expr()->orX(
+						$qb->expr()->eq('uid_owner', $qb->createNamedParameter($userId)),
+						$qb->expr()->eq('uid_initiator', $qb->createNamedParameter($userId))
+					)
+				);
+			}
 		}
 
 		if ($node !== null) {

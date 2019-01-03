@@ -155,9 +155,11 @@ class CheckSetupControllerTest extends TestCase {
 				'hasFreeTypeSupport',
 				'hasMissingIndexes',
 				'isSqliteUsed',
-				'isPhpMailerUsed',
+				'isPHPMailerUsed',
 				'hasOpcacheLoaded',
 				'getAppDirsWithDifferentOwner',
+				'hasRecommendedPHPModules',
+				'hasBigIntConversionPendingColumns',
 			])->getMock();
 	}
 
@@ -189,10 +191,15 @@ class CheckSetupControllerTest extends TestCase {
 	}
 
 	public function testIsInternetConnectionWorkingCorrectly() {
-		$this->config->expects($this->once())
+		$this->config->expects($this->at(0))
 			->method('getSystemValue')
 			->with('has_internet_connection', true)
-			->will($this->returnValue(true));
+            ->will($this->returnValue(true));
+
+		$this->config->expects($this->at(1))
+			->method('getSystemValue')
+			->with('connectivity_check_domains', ['www.nextcloud.com', 'www.startpage.com', 'www.eff.org', 'www.edri.org'])
+			->will($this->returnValue(['www.nextcloud.com', 'www.startpage.com', 'www.eff.org', 'www.edri.org']));
 
 		$client = $this->getMockBuilder('\OCP\Http\Client\IClient')
 			->disableOriginalConstructor()->getMock();
@@ -213,10 +220,15 @@ class CheckSetupControllerTest extends TestCase {
 	}
 
 	public function testIsInternetConnectionFail() {
-		$this->config->expects($this->once())
+		$this->config->expects($this->at(0))
 			->method('getSystemValue')
 			->with('has_internet_connection', true)
-			->will($this->returnValue(true));
+            ->will($this->returnValue(true));
+
+		$this->config->expects($this->at(1))
+			->method('getSystemValue')
+			->with('connectivity_check_domains', ['www.nextcloud.com', 'www.startpage.com', 'www.eff.org', 'www.edri.org'])
+			->will($this->returnValue(['www.nextcloud.com', 'www.startpage.com', 'www.eff.org', 'www.edri.org']));
 
 		$client = $this->getMockBuilder('\OCP\Http\Client\IClient')
 			->disableOriginalConstructor()->getMock();
@@ -339,13 +351,17 @@ class CheckSetupControllerTest extends TestCase {
 			->willReturn('');
 		$this->config->expects($this->at(2))
 			->method('getSystemValue')
+			->with('connectivity_check_domains', ['www.nextcloud.com', 'www.startpage.com', 'www.eff.org', 'www.edri.org'])
+			->will($this->returnValue(['www.nextcloud.com', 'www.startpage.com', 'www.eff.org', 'www.edri.org']));
+		$this->config->expects($this->at(3))
+			->method('getSystemValue')
 			->with('memcache.local', null)
 			->will($this->returnValue('SomeProvider'));
-		$this->config->expects($this->at(3))
+		$this->config->expects($this->at(4))
 			->method('getSystemValue')
 			->with('has_internet_connection', true)
 			->will($this->returnValue(true));
-		$this->config->expects($this->at(4))
+		$this->config->expects($this->at(5))
 			->method('getSystemValue')
 			->with('appstoreenabled', true)
 			->will($this->returnValue(false));
@@ -458,7 +474,7 @@ class CheckSetupControllerTest extends TestCase {
 			]);
 		$this->checkSetupController
 			->expects($this->once())
-			->method('isPhpMailerUsed')
+			->method('isPHPMailerUsed')
 			->willReturn(false);
 		$this->checker
 			->expects($this->once())
@@ -471,6 +487,16 @@ class CheckSetupControllerTest extends TestCase {
 		$this->checkSetupController
 			->expects($this->once())
 			->method('getAppDirsWithDifferentOwner')
+			->willReturn([]);
+
+		$this->checkSetupController
+			->expects($this->once())
+			->method('hasRecommendedPHPModules')
+			->willReturn([]);
+
+		$this->checkSetupController
+			->expects($this->once())
+			->method('hasBigIntConversionPendingColumns')
 			->willReturn([]);
 
 		$expected = new DataResponse(
@@ -511,13 +537,49 @@ class CheckSetupControllerTest extends TestCase {
 				'isSqliteUsed' => false,
 				'databaseConversionDocumentation' => 'http://docs.example.org/server/go.php?to=admin-db-conversion',
 				'missingIndexes' => [],
-				'isPhpMailerUsed' => false,
+				'isPHPMailerUsed' => false,
 				'mailSettingsDocumentation' => 'https://server/index.php/settings/admin',
 				'isMemoryLimitSufficient' => true,
 				'appDirsWithDifferentOwner' => [],
+				'recommendedPHPModules' => [],
+				'pendingBigIntConversionColumns' => [],
 			]
 		);
 		$this->assertEquals($expected, $this->checkSetupController->check());
+	}
+
+	public function testIsPHPMailerUsed() {
+		$checkSetupController = $this->getMockBuilder('\OC\Settings\Controller\CheckSetupController')
+			->setConstructorArgs([
+				'settings',
+				$this->request,
+				$this->config,
+				$this->clientService,
+				$this->urlGenerator,
+				$this->util,
+				$this->l10n,
+				$this->checker,
+				$this->logger,
+				$this->dispatcher,
+				$this->db,
+				$this->lockingProvider,
+				$this->dateTimeFormatter,
+				$this->memoryInfo,
+				$this->secureRandom,
+			])
+			->setMethods(null)->getMock();
+
+		$this->config->expects($this->at(0))
+			->method('getSystemValue')
+			->with('mail_smtpmode', 'smtp')
+			->will($this->returnValue('php'));
+		$this->config->expects($this->at(1))
+			->method('getSystemValue')
+			->with('mail_smtpmode', 'smtp')
+			->will($this->returnValue('not-php'));
+
+		$this->assertTrue($this->invokePrivate($checkSetupController, 'isPHPMailerUsed'));
+		$this->assertFalse($this->invokePrivate($checkSetupController, 'isPHPMailerUsed'));
 	}
 
 	public function testGetCurlVersion() {

@@ -35,6 +35,8 @@ OC.L10N.register(
     "Adjust how people can share between servers." : "A szerverek közti megosztási lehetőségek beállítása",
     "Allow users on this server to send shares to other servers" : "Engedélyezze ezen szerver felhasználóinak, hogy fájlokat osszanak meg más szerverekkel.",
     "Allow users on this server to receive shares from other servers" : "Engedélyezze ezen szerver felhasználóinak, hogy megosztásokat fogadjanak más szerverektől",
+    "Allow users on this server to send shares to groups on other servers" : "Engedélyezze ezen szerver felhasználóinak, hogy megosztásokat küldjenek más szerverek csoportjainak",
+    "Allow users on this server to receive group shares from other servers" : "Engedélyezi ezen szerver felhasználóinak, hogy csoport megosztásokat fogadjanak más szerverektől",
     "Search global and public address book for users" : "Felhasználók keresése a globális és a nyilvános névjegyekben",
     "Allow users to publish their data to a global and public address book" : "Minden felhasználó a közös adattárolót és névjegyzéket használja",
     "Federated Cloud" : "Egyesített felhő",
@@ -52,7 +54,6 @@ OC.L10N.register(
     "Federated share added" : "Egyesített megosztás hozzáadva",
     "Couldn't add remote share" : "Távoli megosztás nem adható hozzá",
     "Sharing %s failed, because this item is already shared with %s" : "%s megosztása nem sikerült, mert ez már meg van osztva vele: %s",
-    "Sharing %s failed, could not find %s, maybe the server is currently unreachable or uses a self-signed certificate." : "%s megosztása nem sikerült, mert %s nem található, lehetséges, hogy a szerver jelenleg nem érhető el vagy ön-aláírt tanúsítványt használ.",
-    "Search global and public address book for users and let local users publish their data" : "A központi és nyilvános névjegyzék keresése a felhasználóknak és a helyi felhasználók is hozzáadhatnak"
+    "Sharing %s failed, could not find %s, maybe the server is currently unreachable or uses a self-signed certificate." : "%s megosztása nem sikerült, mert %s nem található, lehetséges, hogy a szerver jelenleg nem érhető el vagy ön-aláírt tanúsítványt használ."
 },
 "nplurals=2; plural=(n != 1);");
